@@ -86,7 +86,7 @@ module World
 		
 		while any(peopledCells(density))
 			
-			if time_ns() - refresh > 1e8 # 200 ms
+			if time_ns() - refresh > 1e11 # 200 ms
 
 				plotState(density, obstacles, exits);
 
@@ -98,7 +98,7 @@ module World
 			end
 			
 			# wait to sync time with simulator time
-			now = (time_ns() - start) / 1e9
+			now = (time_ns() - start) / 1e11
 
 			if t > now
 				sleep(t - now)
