@@ -1,13 +1,15 @@
 using Base.Test;
 
 @testset "World" begin
-	using CA.World;
+	push!(LOAD_PATH, "/home/ubuntu/workspace/crowds/src/");
+	
+	using World;
 	
 	@testset "isless(scored_cell1, scored_cell2)" begin
 
-		@test isless((.2, (1,1)) , (.3, (1,1)));
+		@test World.isless((.2, (1,1)) , (.3, (1,1)));
 
-		@test isless((.2, (1,1)), (.2, (1,1)));
+		@test World.isless((.2, (1,1)), (.2, (1,1)));
 
 	end	
 
@@ -25,9 +27,9 @@ using Base.Test;
 
 	end
 
-	@testset "makePeopleExit!(A, exits)" begin
+	@testset "makePeopleExit!(density, exits)" begin
 
-		A = [0 0 0; 0 0 1; 0 0 0];
+		A = [0 0 0; 0 0 2;  0 0 0];
 		
 		World.makePeopleExit!(A, BitArray([0 0 0; 0 0 1; 0 0 0]));
 
@@ -42,14 +44,66 @@ using Base.Test;
 
 	end
 
+	@testset "legalNeighbors(density, obstacles, p)" begin
 
-	@testset "bestNeighbor(scores, density, obstacles, p)" begin
+		@test collect(World.legalNeighbors(zeros(2,2), zeros(Bool, 2,2), (1,1))) == [(2, 1), (1, 2)];
+		
+		@test collect(World.legalNeighbors(zeros(2,2), BitArray([0 1; 0 0]), (1,1))) == [(2, 1)];
+		
+		@test collect(World.legalNeighbors([0 0; 1 0], zeros(Bool, 2, 2), (1,1))) == [(1, 2)];
+	end
+	
+	@testset "hasLegalNeighbors(density, obstacles, p)" begin
 
-		@test World.bestNeighbor([0 1; 0 0], zeros(Int64, 2,2), zeros(Bool, 2,2), (1,1)) == (2,1);
+		@test World.hasLegalNeighbors(zeros(2,2), zeros(Bool, 2,2), (1,1));
+		
+		@test World.hasLegalNeighbors(zeros(2,2), BitArray([0 1; 0 0]), (1,1));
+		
+		@test World.hasLegalNeighbors([0 0; 1 0], zeros(Bool, 2, 2), (1,1));
+	
+		@test ! World.hasLegalNeighbors(zeros(2,2), BitArray([0 1; 1 0]), (1,1));
+		
+		@test ! World.hasLegalNeighbors([0 1; 1 0], zeros(Bool, 2, 2), (1,1));
+		
+	end
+	
+	@testset "hasPeopleAndNotObstacle(density, obstacles, p)" begin
 
-		@test World.bestNeighbor([0 1; 0 0], zeros(Int64, 2,2), BitArray([0 0; 1 0]), (1,1)) == (1,2);
+		@test ! World.hasPeopleAndNotObstacle( zeros(2,2), zeros(Bool, 2,2), (1,1) );
+		
+		@test ! World.hasPeopleAndNotObstacle( zeros(2,2), BitArray([1 0; 0 0]), (1,1) );
+		
+		@test World.hasPeopleAndNotObstacle( [1 0; 0 0], zeros(Bool, 2,2), (1,1) );
+	end
+	
+	@testset "isLegalNeighbor(density, obstacles, p)" begin
 
-		@test World.bestNeighbor([0 0; 0 0], zeros(Int64, 2,2), BitArray([0 0; 1 0]), (1,1)) in [(2,1), (1,2)];
+		@test World.isLegalNeighbor( zeros(2,2), zeros(Bool, 2,2), (1,1) );
+		
+		@test ! World.isLegalNeighbor( zeros(2,2), BitArray([0 1; 0 0]), (1,2) );
+		
+		@test ! World.isLegalNeighbor( [0 0; 1 0], zeros(Bool, 2,2), (2,1) );
+
+	end
+	
+	@testset "nonObstacleNeighbors(density, obstacles, p)" begin
+
+		@test collect(World.nonObstacleNeighbors( zeros(2,2), zeros(Bool, 2,2), (1,1) )) == [(2,1), (1,2)];
+		
+		@test collect(World.nonObstacleNeighbors( zeros(2,2), BitArray([0 1; 0 0]), (1,1) ))  == [(2,1)];
+		
+		@test collect(World.nonObstacleNeighbors( [0 0; 1 0], zeros(Bool, 2,2), (1,1) )) == [(2,1), (1,2)];
+
+	end
+	
+	
+	@testset "scoredNeighbors(scores, density, obstacles, p)" begin
+
+		@test World.scoredNeighbors([0 1; 0 0], zeros(Int64, 2,2), zeros(Bool, 2,2), (1,1)) == [(0, (2,1)), (1, (1,2))];
+
+		@test World.scoredNeighbors([0 1; 0 0], zeros(Int64, 2,2), BitArray([0 0; 1 0]), (1,1)) == [(1, (1,2))];
+
+		@test World.scoredNeighbors([0 0; 0 0], zeros(Int64, 2,2), BitArray([0 0; 1 0]), (1,1)) == [(0, (1,2))];
 		
 	end
 

@@ -83,3 +83,4 @@ module Scenarios
 		density, obstacles, exits;
 	end
 end
+

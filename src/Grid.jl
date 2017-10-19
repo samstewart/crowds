@@ -2,7 +2,7 @@
 module Grid
 
 	import Base: getindex, setindex!
-	import Base.Iterators: product
+	import Base.Iterators: product, filter
 
 	export
 	getindex, setindex!,
@@ -11,11 +11,11 @@ module Grid
 
 	width, height,
 
-	neighbors, nonObstacleNeighbors,
+	neighbors,
 
-	cells, wallCells,
+	cells, wallCells, hasNeighbor
 
-	hasNeighbor
+	
 
 	
 	function Base.getindex(grid :: AbstractArray, p :: Tuple{Int64, Int64})
@@ -47,21 +47,19 @@ module Grid
 
 	end
 
+	function isNeighbor(p, q)
+	
+		q in [right(p), up(p), left(p), down(p)];
+		
+	end
+	
 	# neighbors of single cell
 	function neighbors(p :: NTuple{2}, density)
-		n = size(density, 1);
+	
+		filter(q -> isNeighbor(p, q), cells(density))
 		
-		neighbors = [right(p), up(p), left(p), down(p)];
-		
-		# only vertices within the grid 
-		neighbors = [l for l in neighbors if all(0 .< l .<= n)];
 	end
 
-	function nonObstacleNeighbors(p, density, obstacles)
-
-		filter(c -> ! obstacles[c], neighbors(p, density));
-
-	end
 
 	# neighbors of all cells marked 'true'
 	function neighbors(P :: BitArray{2}, density)

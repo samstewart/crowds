@@ -1,7 +1,12 @@
 module ShortestPaths
-
+	push!(LOAD_PATH, "/home/ubuntu/workspace/crowds/src/");
+	
 	export computeScores;
-	using CA.Grid;
+	
+	import Base.Iterators: filter;
+	
+	using Grid;
+	using World;
 
 	function scoreAdjacent(src, dst, scores, density)
 		# we add +1 for physical distance
@@ -35,7 +40,7 @@ module ShortestPaths
 			wavefront = collect(Iterators.filter(x -> isWavefrontCell(x, density, distances, obstacles), cells(density)))
 
 			for c in wavefront			
-				for n in nonObstacleNeighbors(c, density, obstacles)
+				for n in nonObstacleNeighbors(density, obstacles, c)
 					# maybe we found a new, shorter path?
 					distances[n] = min(distances[n], scoreAdjacent(c, n, distances, density));	
 

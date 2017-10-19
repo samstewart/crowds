@@ -1,17 +1,20 @@
 using Base.Test
 
 @testset "Grid" begin
-	using CA.Grid;
+	include("../src/Grid.jl");
+	
+	
+	using Grid;
 
 	@testset "custom indexing" begin
 
 
-		@test getindex([1 1; 2 2], (1,1)) == 1;
+		@test Grid.getindex([1 1; 2 2], (1,1)) == 1;
 	
 		A = [1 1; 2 2];
-		setindex!(A, 5, (1,1));
+		Grid.setindex!(A, 5, (1,1));
 
-		@test getindex(A, (1,1)) == 5;
+		@test Grid.getindex(A, (1,1)) == 5;
 
 	end
 	
@@ -29,16 +32,16 @@ using Base.Test
 	end
 
 	@testset "neighbors(p, density)" begin
-		@test neighbors((1,1), zeros(2,2)) == [(2,1), (1,2)];
-		@test neighbors((1,2), zeros(3,3)) == [(2,2), (1,1), (1,3)];
+		@test collect(neighbors((1,1), zeros(2,2))) == [(2,1), (1,2)];
+		@test collect(neighbors((1,2), zeros(3,3))) == [(1,1), (2,2),  (1,3)];
 
 		grid = BitArray([0 0 0; 0 1 0; 0 0 0]);
 		@test neighbors(grid, zeros(3,3)) == BitArray([0 1 0; 1 0  1; 0 1 0]);
 
-		@test length(neighbors((3,2), zeros(3,3))) == 3;
-		@test length(neighbors((2,3), zeros(3,3))) == 3;
-		@test length(neighbors((2,1), zeros(3,3))) == 3;
-		@test length(neighbors((2,2), zeros(3,3))) == 4;
+		@test length(collect(neighbors((3,2), zeros(3,3)))) == 3;
+		@test length(collect(neighbors((2,3), zeros(3,3)))) == 3;
+		@test length(collect(neighbors((2,1), zeros(3,3)))) == 3;
+		@test length(collect(neighbors((2,2), zeros(3,3)))) == 4;
 	end
 
 	@testset "cells(density)" begin
@@ -49,13 +52,15 @@ using Base.Test
 	end
 
 
-	@testset "nonObstacleNeighbors(p, density, obstacles" begin
+	@testset "isNeighbor(p, q)" begin
 
-		obstacles = [true false; false false];
-		@test collect(nonObstacleNeighbors((2,1), [1 1; 2 2], obstacles)) == [(2,2)]
-
-		obstacles = [true false; false true];
-		@test isempty(nonObstacleNeighbors((2,1), [1 1; 2 2], obstacles));
+		@test Grid.isNeighbor((1,1), (1,2));
+		@test Grid.isNeighbor((1,1), (2,1));
+		@test Grid.isNeighbor((1,1), (0,1));
+		@test Grid.isNeighbor((1,1), (1,0));
+		
+		@test ! Grid.isNeighbor((1,1), (3,3));
+		@test ! Grid.isNeighbor((1,1), (2,2));
 	end
 
 	@testset "hasNeighbor(p, density, predicate)" begin

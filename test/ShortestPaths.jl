@@ -1,8 +1,11 @@
 using Base.Test;
 
 @testset "ShortestPaths" begin
-	using CA.ShortestPaths;
-	using CA.Grid;
+	push!(LOAD_PATH, "/home/ubuntu/workspace/crowds/src/");
+	
+	
+	using ShortestPaths;
+	using Grid;
 
 	@testset "explored(c, density)" begin
 
@@ -17,7 +20,7 @@ using Base.Test;
 		
 		@test !ShortestPaths.isWavefrontCell((2,1),[0 0; 0 0],  [0 typemax(Int64); typemax(Int64) typemax(Int64)], zeros(Bool, 2, 2));
 		
-		@test collect(filter(c -> ShortestPaths.isWavefrontCell(c, [0 0; 0 0], [0 typemax(Int64); typemax(Int64) typemax(Int64)], zeros(Bool, 2, 2)), cells([0 0; 0 0]))) == [(1,1)]
+		@test collect(Iterators.filter(c -> ShortestPaths.isWavefrontCell(c, [0 0; 0 0], [0 typemax(Int64); typemax(Int64) typemax(Int64)], zeros(Bool, 2, 2)), cells([0 0; 0 0]))) == [(1,1)]
 	end
 
 	@testset "scoreAdjacent(src, dst, scores, density)" begin

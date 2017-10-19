@@ -1,11 +1,9 @@
-using CA
 
 using Base.Test
 
 const testdir = dirname(@__FILE__)
 
 tests = [
-   "Display",
    "Grid",
    "World",
    "ShortestPaths"
