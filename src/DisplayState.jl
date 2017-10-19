@@ -1,4 +1,4 @@
-module Display
+module DisplayState
 	using GR;
 	using Colors;
 
@@ -10,8 +10,7 @@ module Display
 		for c in colors
 			setcolorrep(i, c.r, c.g, c.b);
 			i += 1;
-		end
-
+		end 
 		cellarray(0, 1, 0, 1, size(A, 2), size(A, 1), A);
 
 		updatews();
@@ -24,7 +23,7 @@ module Display
 
 	function plotState(density :: Array{Int64, 2})
 		
-		matrixPlot(density, rangeOfColors(maximum(density), colorant"black"));
+		matrixPlot(density, rangeOfColors(maximum(density), colorant"red"));
 
 	end
 
@@ -45,8 +44,8 @@ module Display
 		rendered = density[:,:];
 		
 		maxVal = maximum(density);
-
-		# walls and obstacles to black (todo: make some other color scheme)
+		
+		# color obstacles green and exits blue
 		rendered[obstacles] = maxVal + 1;
 		rendered[exits] = maxVal + 2;
 

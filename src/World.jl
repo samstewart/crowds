@@ -3,7 +3,7 @@ module World
 	
 	using Grid;
 	using ShortestPaths;
-	using .Display;
+	using DisplayState;
 	using GR;
 
 	import Base: isless;
@@ -29,6 +29,12 @@ module World
 		filter(q -> isLegalNeighbor(density, obstacles, q), neighbors(p, density))
 		
 	end
+
+	function isLegalNeighbor(density, obstacles, q)
+	
+		! obstacles[q] && density[q] == 0;
+		
+	end
 	
 	function nonObstacleNeighbors(density, obstacles, p)
 	
@@ -48,12 +54,7 @@ module World
 		
 	end
 	
-	function isLegalNeighbor(density, obstacles, q)
-	
-		! obstacles[q] && density[q] == 0;
-		
-	end
-	
+
 	function movePeopleBetweenCells!(density, p1 :: NTuple{2}, p2 :: NTuple{2})
 
 		density[p1] -= 1;
@@ -86,16 +87,17 @@ module World
 
 		peopled = World.peopledCells(density);
 
-		peopledCells = filter(p -> hasPeopleAndNotObstacle(density, obstacles, p), cells(density));
 		
-		cellsWithLegalMoves = filter(p -> hasLegalNeighbors(density, obstacles, p), peopledCells);
-		
-		for p in cellsWithLegalMoves
-				
-			# find the cheapest neighbor (one is gauranteed to exist) and break ties randomly (shuffle!)
-			dst = last(minimum(shuffle!(scoredNeighbors(scores, density, obstacles, p))));
+		for p in cells(density) 
+
+			if peopled[p] && ! obstacles[p]	&& hasLegalNeighbors(newdensity, obstacles, p)
+
+				# find the cheapest neighbor (one is gauranteed to exist) and break ties randomly (shuffle!)
+				dst = last(minimum(shuffle!(scoredNeighbors(scores, newdensity, obstacles, p))));
 			
-			movePeopleBetweenCells!(newdensity, p, dst);		
+				movePeopleBetweenCells!(newdensity, p, dst);		
+
+			end
 			
 		end
 
@@ -109,16 +111,19 @@ module World
 		t = 0.0 # in seconds
 		dt = 0.001
 		start = refresh = time_ns()
-
+		
+		wait = 2*1e8
 		setviewport(0, 1, 0, 1);
 		updatews()
 		clearws()
 		
 		while any(peopledCells(density))
 			
-			if time_ns() - refresh > 1e11 # 200 ms
+			if time_ns() - refresh > wait # 200 ms
+				scores = computeScores(density, obstacles, exits);
+				scores[scores .> 1e8] = 0;
 
-				plotState(density, obstacles, exits);
+				DisplayState.plotState(scores);
 
 				density = update(density, obstacles, exits);
 
@@ -128,7 +133,7 @@ module World
 			end
 			
 			# wait to sync time with simulator time
-			now = (time_ns() - start) / 1e11
+			now = (time_ns() - start) / wait 
 
 			if t > now
 				sleep(t - now)

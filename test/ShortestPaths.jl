@@ -1,7 +1,6 @@
 using Base.Test;
 
 @testset "ShortestPaths" begin
-	push!(LOAD_PATH, "/home/ubuntu/workspace/crowds/src/");
 	
 	
 	using ShortestPaths;

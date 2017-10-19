@@ -1,9 +1,6 @@
 using Base.Test
 
 @testset "Grid" begin
-	include("../src/Grid.jl");
-	
-	
 	using Grid;
 
 	@testset "custom indexing" begin
@@ -32,8 +29,8 @@ using Base.Test
 	end
 
 	@testset "neighbors(p, density)" begin
-		@test collect(neighbors((1,1), zeros(2,2))) == [(2,1), (1,2)];
-		@test collect(neighbors((1,2), zeros(3,3))) == [(1,1), (2,2),  (1,3)];
+		@test collect(neighbors((1,1), zeros(2,2))) == [(1,2), (2,1)];
+		@test collect(neighbors((1,2), zeros(3,3))) == [(1,1), (1,3),  (2,2)];
 
 		grid = BitArray([0 0 0; 0 1 0; 0 0 0]);
 		@test neighbors(grid, zeros(3,3)) == BitArray([0 1 0; 1 0  1; 0 1 0]);

@@ -55,9 +55,7 @@ module Grid
 	
 	# neighbors of single cell
 	function neighbors(p :: NTuple{2}, density)
-	
-		filter(q -> isNeighbor(p, q), cells(density))
-		
+		[n  for n in [up(p), down(p), left(p), right(p)] if all(0 .< n .<= size(density))]	
 	end
 
 

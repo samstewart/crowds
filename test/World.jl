@@ -1,7 +1,6 @@
 using Base.Test;
 
 @testset "World" begin
-	push!(LOAD_PATH, "/home/ubuntu/workspace/crowds/src/");
 	
 	using World;
 	
@@ -46,7 +45,7 @@ using Base.Test;
 
 	@testset "legalNeighbors(density, obstacles, p)" begin
 
-		@test collect(World.legalNeighbors(zeros(2,2), zeros(Bool, 2,2), (1,1))) == [(2, 1), (1, 2)];
+		@test collect(World.legalNeighbors(zeros(2,2), zeros(Bool, 2,2), (1,1))) == [(1, 2), (2, 1)];
 		
 		@test collect(World.legalNeighbors(zeros(2,2), BitArray([0 1; 0 0]), (1,1))) == [(2, 1)];
 		
@@ -88,18 +87,18 @@ using Base.Test;
 	
 	@testset "nonObstacleNeighbors(density, obstacles, p)" begin
 
-		@test collect(World.nonObstacleNeighbors( zeros(2,2), zeros(Bool, 2,2), (1,1) )) == [(2,1), (1,2)];
+		@test collect(World.nonObstacleNeighbors( zeros(2,2), zeros(Bool, 2,2), (1,1) )) == [(1,2), (2,1)];
 		
 		@test collect(World.nonObstacleNeighbors( zeros(2,2), BitArray([0 1; 0 0]), (1,1) ))  == [(2,1)];
 		
-		@test collect(World.nonObstacleNeighbors( [0 0; 1 0], zeros(Bool, 2,2), (1,1) )) == [(2,1), (1,2)];
+		@test collect(World.nonObstacleNeighbors( [0 0; 1 0], zeros(Bool, 2,2), (1,1) )) == [(1,2), (2,1)];
 
 	end
 	
 	
 	@testset "scoredNeighbors(scores, density, obstacles, p)" begin
 
-		@test World.scoredNeighbors([0 1; 0 0], zeros(Int64, 2,2), zeros(Bool, 2,2), (1,1)) == [(0, (2,1)), (1, (1,2))];
+		@test World.scoredNeighbors([0 1; 0 0], zeros(Int64, 2,2), zeros(Bool, 2,2), (1,1)) == [(1, (1,2)), (0, (2,1)) ];
 
 		@test World.scoredNeighbors([0 1; 0 0], zeros(Int64, 2,2), BitArray([0 0; 1 0]), (1,1)) == [(1, (1,2))];
 
